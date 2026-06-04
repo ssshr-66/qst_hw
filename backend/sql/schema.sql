@@ -1,0 +1,76 @@
+-- 婚纱影楼管理系统 建库建表脚本
+-- 执行：mysql -uroot -p < schema.sql
+
+CREATE DATABASE IF NOT EXISTS wedding_studio
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
+
+USE wedding_studio;
+
+-- 用户表
+DROP TABLE IF EXISTS user;
+CREATE TABLE user (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '密码',
+    phone VARCHAR(20) COMMENT '手机号',
+    role VARCHAR(20) NOT NULL DEFAULT 'USER' COMMENT '角色 USER/ADMIN',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '用户表';
+
+-- 婚纱表
+DROP TABLE IF EXISTS dress;
+CREATE TABLE dress (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '婚纱ID',
+    name VARCHAR(100) NOT NULL COMMENT '婚纱名称',
+    style VARCHAR(50) COMMENT '婚纱风格',
+    size VARCHAR(20) COMMENT '婚纱尺寸',
+    price DECIMAL(10,2) NOT NULL COMMENT '价格',
+    image_url VARCHAR(255) COMMENT '图片地址',
+    stock INT DEFAULT 0 COMMENT '库存',
+    description VARCHAR(500) COMMENT '描述',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '婚纱表';
+
+-- 婚纱订单表
+DROP TABLE IF EXISTS dress_order;
+CREATE TABLE dress_order (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '订单ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    dress_id BIGINT NOT NULL COMMENT '婚纱ID',
+    price DECIMAL(10,2) NOT NULL COMMENT '订单金额',
+    status INT NOT NULL DEFAULT 1 COMMENT '订单状态 1已购买 2已退货',
+    return_reason VARCHAR(500) COMMENT '退货原因',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '婚纱订单表';
+
+-- 样片表
+DROP TABLE IF EXISTS sample;
+CREATE TABLE sample (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '样片ID',
+    name VARCHAR(100) NOT NULL COMMENT '样片名称',
+    style VARCHAR(50) COMMENT '样片风格',
+    price DECIMAL(10,2) NOT NULL COMMENT '拍摄价格',
+    image_url VARCHAR(255) COMMENT '图片地址',
+    description VARCHAR(500) COMMENT '描述',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '样片表';
+
+-- 拍摄预约表
+DROP TABLE IF EXISTS appointment;
+CREATE TABLE appointment (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '预约ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    sample_id BIGINT NOT NULL COMMENT '样片ID',
+    appointment_time DATETIME NOT NULL COMMENT '预约时间',
+    report_time DATETIME COMMENT '报道时间',
+    finish_time DATETIME COMMENT '拍摄完成时间',
+    pay_time DATETIME COMMENT '支付时间',
+    status INT NOT NULL DEFAULT 0 COMMENT '状态 0已预约 1已报道 2已拍摄完成 3已支付待取片',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '拍摄预约表';

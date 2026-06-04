@@ -1,0 +1,17 @@
+# IDE
+.idea/
+*.iml
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+
+# 后端
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# 系统文件
+.DS_Store
+Thumbs.db
