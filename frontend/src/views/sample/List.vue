@@ -1,19 +1,42 @@
 <template>
-  <!-- 样片套餐列表页（用户端） -->
-  <!-- 功能：
-       1. 页面加载时调用listSample()获取所有样片套餐
-       2. 以卡片网格形式展示样片列表（图片、标题、描述、价格）
-       3. 点击样片卡片跳转到详情页 /sample/detail/:id
-       4. 提供返回按钮
-  -->
+  <div class="sample-list-container">
+    <el-card>
+      <h2>样片列表</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="6" v-for="sample in list" :key="sample.id">
+          <el-card @click="$router.push(`/sample/detail/${sample.id}`)" class="sample-card">
+            <img :src="sample.imageUrl" style="width: 100%" />
+            <h3>{{ sample.title }}</h3>
+            <p>{{ sample.description }}</p>
+            <p style="color: red; font-weight: bold">¥{{ sample.price }}</p>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、路由、样片列表接口
-// 定义响应式数据list存储样片列表
-// onMounted钩子中调用listSample()加载数据
+import { ref, onMounted } from 'vue'
+import { listSample } from '@/api/sample'
+
+const list = ref([])
+
+onMounted(async () => {
+  list.value = await listSample()
+})
 </script>
 
 <style scoped>
-/* 网格布局、卡片悬停效果 */
+.sample-list-container {
+  padding: 20px;
+}
+.sample-card {
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.sample-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
 </style>
