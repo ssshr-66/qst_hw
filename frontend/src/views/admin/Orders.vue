@@ -1,20 +1,38 @@
 <template>
-  <!-- 订单管理页（管理员端） -->
-  <!-- 功能：
-       1. 页面加载时调用listAllOrders()获取所有订单
-       2. 用表格展示订单信息（用户名、婚纱名称、价格、状态、退货原因）
-       3. 订单状态显示：已购买（绿色）、已退货（灰色）
-       4. 纯查看功能，无编辑操作
-       5. 提供返回按钮
-  -->
+  <div class="admin-orders-container">
+    <el-card>
+      <h2>订单管理</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-table :data="orders" style="margin-top: 20px">
+        <el-table-column prop="userName" label="用户" />
+        <el-table-column prop="dressName" label="婚纱名称" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="status" label="状态">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'info'">
+              {{ row.status === 1 ? '已购买' : '已退货' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="returnReason" label="退货原因" />
+      </el-table>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、管理员订单列表接口
-// 定义响应式数据orders存储订单列表
-// onMounted钩子中加载所有订单
+import { ref, onMounted } from 'vue'
+import { listAllOrders } from '@/api/admin'
+
+const orders = ref([])
+
+onMounted(async () => {
+  orders.value = await listAllOrders()
+})
 </script>
 
 <style scoped>
-/* 订单管理页布局样式 */
+.admin-orders-container {
+  padding: 20px;
+}
 </style>
