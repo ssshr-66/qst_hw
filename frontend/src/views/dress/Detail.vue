@@ -1,23 +1,51 @@
 <template>
-  <!-- 婚纱详情页（用户端） -->
-  <!-- 功能：
-       1. 根据路由参数id调用getDress()获取婚纱详情
-       2. 展示婚纱大图、名称、描述、价格、库存
-       3. 提供"立即购买"按钮
-       4. 点击购买：检查登录状态、调用createOrder()创建订单、跳转到订单页
-       5. 库存为0时禁用购买按钮
-       6. 提供返回按钮
-  -->
+  <div class="dress-detail-container">
+    <el-card v-if="dress">
+      <el-button @click="$router.back()">返回</el-button>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <img :src="dress.imageUrl" style="width: 100%" />
+        </el-col>
+        <el-col :span="12">
+          <h2>{{ dress.name }}</h2>
+          <p>{{ dress.description }}</p>
+          <p style="color: red; font-size: 24px; font-weight: bold">¥{{ dress.price }}</p>
+          <p>库存：{{ dress.stock }}</p>
+          <el-button type="primary" @click="handleBuy" :disabled="dress.stock === 0">立即购买</el-button>
+        </el-col>
+      </el-row>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、路由、婚纱详情和创建订单接口、消息提示
-// 从路由参数获取婚纱id
-// 定义响应式数据dress存储婚纱详情
-// onMounted钩子中加载婚纱详情
-// 实现handleBuy方法：验证登录、创建订单、跳转
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { getDress, createOrder } from '@/api/dress'
+import { ElMessage } from 'element-plus'
+
+const route = useRoute()
+const router = useRouter()
+const dress = ref(null)
+
+onMounted(async () => {
+  dress.value = await getDress(route.params.id)
+})
+
+const handleBuy = async () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  if (!user.id) {
+    ElMessage.warning('请先登录')
+    return router.push('/login')
+  }
+  await createOrder({ userId: user.id, dressId: dress.value.id })
+  ElMessage.success('购买成功')
+  router.push('/user/orders')
+}
 </script>
 
 <style scoped>
-/* 详情页布局样式 */
+.dress-detail-container {
+  padding: 20px;
+}
 </style>
