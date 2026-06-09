@@ -1,22 +1,58 @@
 <template>
-  <!-- 用户首页 -->
-  <!-- 功能：
-       1. 显示欢迎信息（从localStorage读取用户名）
-       2. 提供四个功能入口的卡片导航：
-          - 浏览婚纱 → /dress/list
-          - 我的订单 → /user/orders
-          - 浏览样片 → /sample/list
-          - 我的预约 → /user/appointments
-       3. 提供退出登录按钮（清除localStorage、跳转到登录页）
-  -->
+  <div class="home-container">
+    <el-card>
+      <h2>欢迎，{{ user.username }}</h2>
+      <el-button @click="logout" type="danger" style="float: right">退出登录</el-button>
+      <div style="clear: both; margin-top: 20px">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-card @click="$router.push('/dress/list')" class="menu-card">
+              <h3>浏览婚纱</h3>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card @click="$router.push('/user/orders')" class="menu-card">
+              <h3>我的订单</h3>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card @click="$router.push('/sample/list')" class="menu-card">
+              <h3>浏览样片</h3>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card @click="$router.push('/user/appointments')" class="menu-card">
+              <h3>我的预约</h3>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、路由
-// 从localStorage读取用户信息
-// 实现logout方法：清除用户信息、跳转登录页
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const user = ref(JSON.parse(localStorage.getItem('user') || '{}'))
+
+const logout = () => {
+  localStorage.removeItem('user')
+  router.push('/login')
+}
 </script>
 
 <style scoped>
-/* 导航卡片网格布局、悬停效果 */
+.home-container {
+  padding: 20px;
+}
+.menu-card {
+  cursor: pointer;
+  text-align: center;
+}
+.menu-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
 </style>
