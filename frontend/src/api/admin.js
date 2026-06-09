@@ -1,19 +1,66 @@
-// 管理员相关接口
-// 婚纱管理功能：
-// 1. listAllDress() - 获取所有婚纱
-// 2. addDress(data) - 添加婚纱
-// 3. updateDress(data) - 更新婚纱信息
-// 4. deleteDress(id) - 删除婚纱
-//
-// 样片管理功能：
-// 5. listAllSample() - 获取所有样片套餐
-// 6. addSample(data) - 添加样片套餐
-// 7. updateSample(data) - 更新样片套餐
-// 8. deleteSample(id) - 删除样片套餐
-//
-// 订单/预约查询功能：
-// 9. listAllOrders() - 查询所有订单
-// 10. listAllAppointments() - 查询所有预约
-//
-// Mock模式：操作mockDresses、mockSamples、mockOrders、mockAppointments数组
-// 真实模式：调用后端 /admin/* 接口
+import request from './request'
+import { mockDresses, mockSamples, mockOrders, mockAppointments } from './mock'
+
+const useMock = true
+
+export const listAllDress = () => useMock ? Promise.resolve(mockDresses) : request.get('/admin/dress/list')
+
+export const addDress = data => {
+    if (useMock) {
+        const dress = { id: mockDresses.length + 1, ...data }
+        mockDresses.push(dress)
+        return Promise.resolve(dress)
+    }
+    return request.post('/admin/dress/add', data)
+}
+
+export const updateDress = data => {
+    if (useMock) {
+        const index = mockDresses.findIndex(d => d.id === data.id)
+        if (index !== -1) mockDresses[index] = data
+        return Promise.resolve(data)
+    }
+    return request.put('/admin/dress/update', data)
+}
+
+export const deleteDress = id => {
+    if (useMock) {
+        const index = mockDresses.findIndex(d => d.id == id)
+        if (index !== -1) mockDresses.splice(index, 1)
+        return Promise.resolve()
+    }
+    return request.delete(`/admin/dress/delete/${id}`)
+}
+
+export const listAllSample = () => useMock ? Promise.resolve(mockSamples) : request.get('/admin/sample/list')
+
+export const addSample = data => {
+    if (useMock) {
+        const sample = { id: mockSamples.length + 1, ...data }
+        mockSamples.push(sample)
+        return Promise.resolve(sample)
+    }
+    return request.post('/admin/sample/add', data)
+}
+
+export const updateSample = data => {
+    if (useMock) {
+        const index = mockSamples.findIndex(s => s.id === data.id)
+        if (index !== -1) mockSamples[index] = data
+        return Promise.resolve(data)
+    }
+    return request.put('/admin/sample/update', data)
+}
+
+export const deleteSample = id => {
+    if (useMock) {
+        const index = mockSamples.findIndex(s => s.id == id)
+        if (index !== -1) mockSamples.splice(index, 1)
+        return Promise.resolve()
+    }
+    return request.delete(`/admin/sample/delete/${id}`)
+}
+
+export const listAllOrders = () => useMock ? Promise.resolve(mockOrders) : request.get('/admin/orders')
+
+export const listAllAppointments = () => useMock ? Promise.resolve(mockAppointments) : request.get('/admin/appointments')
