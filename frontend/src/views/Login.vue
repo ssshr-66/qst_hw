@@ -1,20 +1,55 @@
 <template>
-  <!-- 登录页面 -->
-  <!-- 功能：
-       1. 显示登录表单（用户名、密码输入框）
-       2. 调用登录接口验证用户
-       3. 登录成功后保存用户信息到localStorage
-       4. 根据用户角色跳转：管理员→/admin/home，普通用户→/user/home
-       5. 提供注册页面链接
-  -->
+  <div class="login-container">
+    <el-card class="login-card">
+      <h2>婚纱影楼管理系统</h2>
+      <el-form :model="form" @submit.prevent="handleLogin">
+        <el-form-item>
+          <el-input v-model="form.username" placeholder="用户名" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="form.password" type="password" placeholder="密码" />
+        </el-form-item>
+        <el-button type="primary" @click="handleLogin" style="width: 100%">登录</el-button>
+        <div style="margin-top: 10px; text-align: center">
+          <router-link to="/register">还没有账号？立即注册</router-link>
+        </div>
+      </el-form>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、路由、登录接口、消息提示组件
-// 定义表单数据（username, password）
-// 实现handleLogin方法：验证输入、调用登录接口、保存用户信息、跳转页面
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '@/api/user'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter()
+const form = reactive({ username: '', password: '' })
+
+const handleLogin = async () => {
+  if (!form.username || !form.password) {
+    return ElMessage.warning('请输入用户名和密码')
+  }
+  const user = await login(form)
+  localStorage.setItem('user', JSON.stringify(user))
+  ElMessage.success('登录成功')
+  router.push(user.role === 'ADMIN' ? '/admin/home' : '/user/home')
+}
 </script>
 
 <style scoped>
-/* 居中布局样式 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.login-card {
+  width: 400px;
+}
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 </style>
