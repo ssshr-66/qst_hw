@@ -1,19 +1,42 @@
 <template>
-  <!-- 婚纱列表页（用户端） -->
-  <!-- 功能：
-       1. 页面加载时调用listDress()获取所有婚纱
-       2. 以卡片网格形式展示婚纱列表（图片、名称、描述、价格）
-       3. 点击婚纱卡片跳转到详情页 /dress/detail/:id
-       4. 提供返回按钮
-  -->
+  <div class="dress-list-container">
+    <el-card>
+      <h2>婚纱列表</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="6" v-for="dress in list" :key="dress.id">
+          <el-card @click="$router.push(`/dress/detail/${dress.id}`)" class="dress-card">
+            <img :src="dress.imageUrl" style="width: 100%" />
+            <h3>{{ dress.name }}</h3>
+            <p>{{ dress.description }}</p>
+            <p style="color: red; font-weight: bold">¥{{ dress.price }}</p>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、路由、婚纱列表接口
-// 定义响应式数据list存储婚纱列表
-// onMounted钩子中调用listDress()加载数据
+import { ref, onMounted } from 'vue'
+import { listDress } from '@/api/dress'
+
+const list = ref([])
+
+onMounted(async () => {
+  list.value = await listDress()
+})
 </script>
 
 <style scoped>
-/* 网格布局、卡片悬停效果 */
+.dress-list-container {
+  padding: 20px;
+}
+.dress-card {
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.dress-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
 </style>
