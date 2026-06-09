@@ -1,23 +1,52 @@
 <template>
-  <!-- 预约管理页（管理员端） -->
-  <!-- 功能：
-       1. 页面加载时调用listAllAppointments()获取所有预约
-       2. 用表格展示预约信息（用户名、样片标题、预约时间、状态）
-       3. 预约状态：已预约(0)、已报道(1)、已拍摄完成(2)、已支付待取片(3)
-       4. 操作按钮：
-          - 状态为"已报道"时显示"确认拍摄完成"按钮 → 调用finish()将状态改为"已拍摄完成"
-       5. 操作成功后刷新列表
-       6. 提供返回按钮
-  -->
+  <div class="admin-appointments-container">
+    <el-card>
+      <h2>预约管理</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-table :data="appointments" style="margin-top: 20px">
+        <el-table-column prop="userName" label="用户" />
+        <el-table-column prop="sampleTitle" label="样片标题" />
+        <el-table-column prop="appointmentTime" label="预约时间" />
+        <el-table-column prop="status" label="状态">
+          <template #default="{ row }">
+            <el-tag :type="['', 'warning', 'success', 'info'][row.status]">
+              {{ ['已预约', '已报道', '已拍摄完成', '已支付待取片'][row.status] }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template #default="{ row }">
+            <el-button v-if="row.status === 1" type="success" size="small" @click="handleFinish(row)">
+              确认拍摄完成
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、管理员预约列表接口、拍摄完成接口、消息提示
-// 定义响应式数据appointments存储预约列表
-// onMounted钩子中加载所有预约
-// 实现handleFinish方法：确认拍摄完成、刷新列表
+import { ref, onMounted } from 'vue'
+import { listAllAppointments } from '@/api/admin'
+import { finish } from '@/api/appointment'
+import { ElMessage } from 'element-plus'
+
+const appointments = ref([])
+
+onMounted(async () => {
+  appointments.value = await listAllAppointments()
+})
+
+const handleFinish = async (row) => {
+  await finish({ appointmentId: row.id })
+  ElMessage.success('拍摄完成确认成功')
+  appointments.value = await listAllAppointments()
+}
 </script>
 
 <style scoped>
-/* 预约管理页布局样式 */
+.admin-appointments-container {
+  padding: 20px;
+}
 </style>

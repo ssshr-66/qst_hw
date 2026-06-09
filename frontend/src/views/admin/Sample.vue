@@ -1,30 +1,67 @@
 <template>
-  <!-- 样片管理页（管理员端） -->
-  <!-- 功能：
-       1. 页面加载时调用listAllSample()获取所有样片套餐
-       2. 用表格展示样片列表（标题、价格）
-       3. 提供"添加样片"按钮
-       4. 每行提供"编辑"和"删除"按钮
-       5. 添加/编辑：弹出对话框，表单包含（标题、描述、价格、图片URL）
-          - 添加时调用addSample()
-          - 编辑时调用updateSample()
-       6. 删除：弹出确认对话框，调用deleteSample()
-       7. 操作成功后刷新列表
-       8. 提供返回按钮
-  -->
+  <div class="admin-sample-container">
+    <el-card>
+      <h2>样片管理</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-button type="primary" @click="showDialog()">添加样片</el-button>
+      <el-table :data="list" style="margin-top: 20px">
+        <el-table-column prop="title" label="标题" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column label="操作">
+          <template #default="{ row }">
+            <el-button size="small" @click="showDialog(row)">编辑</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    <el-dialog v-model="dialogVisible" :title="form.id ? '编辑样片' : '添加样片'">
+      <el-form :model="form">
+        <el-form-item label="标题"><el-input v-model="form.title" /></el-form-item>
+        <el-form-item label="描述"><el-input v-model="form.description" /></el-form-item>
+        <el-form-item label="价格"><el-input-number v-model="form.price" /></el-form-item>
+        <el-form-item label="图片URL"><el-input v-model="form.imageUrl" /></el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSave">保存</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、管理员样片相关接口、消息提示和确认对话框
-// 定义响应式数据list存储样片列表
-// 定义对话框显示状态dialogVisible
-// 定义表单数据form（id, title, description, price, imageUrl）
-// onMounted钩子中加载样片列表
-// 实现showDialog方法：显示添加/编辑对话框，编辑时填充表单数据
-// 实现handleSave方法：根据form.id判断是添加还是编辑、调用相应接口、刷新列表
-// 实现handleDelete方法：弹出确认对话框、调用删除接口、刷新列表
+import { ref, reactive, onMounted } from 'vue'
+import { listAllSample, addSample, updateSample, deleteSample } from '@/api/admin'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+const list = ref([])
+const dialogVisible = ref(false)
+const form = reactive({ id: null, title: '', description: '', price: 0, imageUrl: '' })
+
+onMounted(async () => { list.value = await listAllSample() })
+
+const showDialog = (row) => {
+  if (row) Object.assign(form, row)
+  else Object.assign(form, { id: null, title: '', description: '', price: 0, imageUrl: '' })
+  dialogVisible.value = true
+}
+
+const handleSave = async () => {
+  await (form.id ? updateSample(form) : addSample(form))
+  ElMessage.success('操作成功')
+  dialogVisible.value = false
+  list.value = await listAllSample()
+}
+
+const handleDelete = async (id) => {
+  await ElMessageBox.confirm('确定删除？', '提示')
+  await deleteSample(id)
+  ElMessage.success('删除成功')
+  list.value = await listAllSample()
+}
 </script>
 
 <style scoped>
-/* 管理页布局样式 */
+.admin-sample-container { padding: 20px; }
 </style>

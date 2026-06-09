@@ -1,30 +1,69 @@
 <template>
-  <!-- 婚纱管理页（管理员端） -->
-  <!-- 功能：
-       1. 页面加载时调用listAllDress()获取所有婚纱
-       2. 用表格展示婚纱列表（名称、价格、库存）
-       3. 提供"添加婚纱"按钮
-       4. 每行提供"编辑"和"删除"按钮
-       5. 添加/编辑：弹出对话框，表单包含（名称、描述、价格、库存、图片URL）
-          - 添加时调用addDress()
-          - 编辑时调用updateDress()
-       6. 删除：弹出确认对话框，调用deleteDress()
-       7. 操作成功后刷新列表
-       8. 提供返回按钮
-  -->
+  <div class="admin-dress-container">
+    <el-card>
+      <h2>婚纱管理</h2>
+      <el-button @click="$router.back()">返回</el-button>
+      <el-button type="primary" @click="showDialog()">添加婚纱</el-button>
+      <el-table :data="list" style="margin-top: 20px">
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="stock" label="库存" />
+        <el-table-column label="操作">
+          <template #default="{ row }">
+            <el-button size="small" @click="showDialog(row)">编辑</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    <el-dialog v-model="dialogVisible" :title="form.id ? '编辑婚纱' : '添加婚纱'">
+      <el-form :model="form">
+        <el-form-item label="名称"><el-input v-model="form.name" /></el-form-item>
+        <el-form-item label="描述"><el-input v-model="form.description" /></el-form-item>
+        <el-form-item label="价格"><el-input-number v-model="form.price" /></el-form-item>
+        <el-form-item label="库存"><el-input-number v-model="form.stock" /></el-form-item>
+        <el-form-item label="图片URL"><el-input v-model="form.imageUrl" /></el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSave">保存</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup>
-// 导入Vue、管理员婚纱相关接口、消息提示和确认对话框
-// 定义响应式数据list存储婚纱列表
-// 定义对话框显示状态dialogVisible
-// 定义表单数据form（id, name, description, price, stock, imageUrl）
-// onMounted钩子中加载婚纱列表
-// 实现showDialog方法：显示添加/编辑对话框，编辑时填充表单数据
-// 实现handleSave方法：根据form.id判断是添加还是编辑、调用相应接口、刷新列表
-// 实现handleDelete方法：弹出确认对话框、调用删除接口、刷新列表
+import { ref, reactive, onMounted } from 'vue'
+import { listAllDress, addDress, updateDress, deleteDress } from '@/api/admin'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+const list = ref([])
+const dialogVisible = ref(false)
+const form = reactive({ id: null, name: '', description: '', price: 0, stock: 0, imageUrl: '' })
+
+onMounted(async () => { list.value = await listAllDress() })
+
+const showDialog = (row) => {
+  if (row) Object.assign(form, row)
+  else Object.assign(form, { id: null, name: '', description: '', price: 0, stock: 0, imageUrl: '' })
+  dialogVisible.value = true
+}
+
+const handleSave = async () => {
+  await (form.id ? updateDress(form) : addDress(form))
+  ElMessage.success('操作成功')
+  dialogVisible.value = false
+  list.value = await listAllDress()
+}
+
+const handleDelete = async (id) => {
+  await ElMessageBox.confirm('确定删除？', '提示')
+  await deleteDress(id)
+  ElMessage.success('删除成功')
+  list.value = await listAllDress()
+}
 </script>
 
 <style scoped>
-/* 管理页布局样式 */
+.admin-dress-container { padding: 20px; }
 </style>
