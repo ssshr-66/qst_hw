@@ -30,3 +30,39 @@ export const returnOrder = data => {
     }
     return request.post('/dress/return', data)
 }
+
+// 管理员：新增婚纱
+export const addDress = data => {
+    if (useMock) {
+        const newDress = { id: mockDresses.length + 1, ...data }
+        mockDresses.push(newDress)
+        return Promise.resolve(newDress)
+    }
+    return request.post('/admin/dress', data)
+}
+
+// 管理员：修改婚纱
+export const updateDress = data => {
+    if (useMock) {
+        const index = mockDresses.findIndex(d => d.id === data.id)
+        if (index !== -1) {
+            mockDresses[index] = { ...mockDresses[index], ...data }
+            return Promise.resolve(mockDresses[index])
+        }
+        return Promise.reject('婚纱不存在')
+    }
+    return request.put('/admin/dress', data)
+}
+
+// 管理员：删除婚纱
+export const deleteDress = id => {
+    if (useMock) {
+        const index = mockDresses.findIndex(d => d.id === id)
+        if (index !== -1) {
+            mockDresses.splice(index, 1)
+            return Promise.resolve()
+        }
+        return Promise.reject('婚纱不存在')
+    }
+    return request.delete(`/admin/dress/${id}`)
+}

@@ -15,6 +15,9 @@ export const createAppointment = data => {
 
 export const listMyAppointments = userId => useMock ? Promise.resolve(mockAppointments.filter(a => a.userId == userId)) : request.get(`/appointment/list/${userId}`)
 
+// 管理员：查看所有预约
+export const listAllAppointments = () => useMock ? Promise.resolve(mockAppointments) : request.get('/admin/appointment/list')
+
 export const checkin = data => {
     if (useMock) {
         const apt = mockAppointments.find(a => a.id === data.appointmentId)

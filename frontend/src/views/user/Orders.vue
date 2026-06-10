@@ -1,7 +1,7 @@
 <template>
   <div class="orders-container">
     <el-card>
-      <h2>我的订单</h2>
+      <h2>婚纱订单</h2>
       <el-button @click="$router.back()">返回</el-button>
       <el-table :data="orders" style="margin-top: 20px">
         <el-table-column prop="dressName" label="婚纱名称" />

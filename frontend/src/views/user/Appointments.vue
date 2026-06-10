@@ -1,7 +1,7 @@
 <template>
   <div class="appointments-container">
     <el-card>
-      <h2>我的预约</h2>
+      <h2>摄影预约</h2>
       <el-button @click="$router.back()">返回</el-button>
       <el-table :data="appointments" style="margin-top: 20px">
         <el-table-column prop="sampleTitle" label="样片标题" />

@@ -12,7 +12,7 @@
           </el-col>
           <el-col :span="6">
             <el-card @click="$router.push('/user/orders')" class="menu-card">
-              <h3>我的订单</h3>
+              <h3>婚纱订单</h3>
             </el-card>
           </el-col>
           <el-col :span="6">
@@ -22,7 +22,7 @@
           </el-col>
           <el-col :span="6">
             <el-card @click="$router.push('/user/appointments')" class="menu-card">
-              <h3>我的预约</h3>
+              <h3>摄影预约</h3>
             </el-card>
           </el-col>
         </el-row>
