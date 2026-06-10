@@ -26,11 +26,11 @@ export const createOrder = data => {
         return Promise.resolve(order)
     }
     // 真实模式下，调用后端创建订单接口
-    return request.post('/dress/order', data)
+    return request.post('/dress/order/create', data)
 }
 
 // 获取用户的订单列表，根据用户ID筛选
-export const listMyOrders = userId => useMock ? Promise.resolve(mockOrders.filter(o => o.userId == userId)) : request.get(`/dress/orders/${userId}`)
+export const listMyOrders = userId => useMock ? Promise.resolve(mockOrders.filter(o => o.userId == userId)) : request.get(`/dress/order/my?userId=${userId}`)
 
 // 退货接口
 export const returnOrder = data => {
@@ -49,7 +49,7 @@ export const returnOrder = data => {
         return Promise.resolve(order)
     }
     // 真实模式下，调用后端退货接口
-    return request.post('/dress/return', data)
+    return request.post('/dress/order/return', data)
 }
 
 // 管理员接口：新增礼服

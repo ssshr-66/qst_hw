@@ -28,6 +28,11 @@ public class AdminController {
 
     /* ============ 婚纱管理 ============ */
 
+    @GetMapping("/dress/list")
+    public Result<List<Dress>> listAllDress() {
+        return Result.success(dressService.list());
+    }
+
     @PostMapping("/dress/add")
     public Result<Void> addDress(@RequestBody Dress dress) {
         dressService.add(dress);
@@ -46,12 +51,17 @@ public class AdminController {
         return Result.success("删除成功", null);
     }
 
-    @GetMapping("/dress/order/list")
+    @GetMapping("/orders")
     public Result<List<DressOrder>> listAllOrders() {
         return Result.success(dressService.listAllOrders());
     }
 
     /* ============ 样片管理 ============ */
+
+    @GetMapping("/sample/list")
+    public Result<List<Sample>> listAllSample() {
+        return Result.success(sampleService.list());
+    }
 
     @PostMapping("/sample/add")
     public Result<Void> addSample(@RequestBody Sample sample) {
@@ -73,7 +83,7 @@ public class AdminController {
 
     /* ============ 预约管理 ============ */
 
-    @GetMapping("/appointment/list")
+    @GetMapping("/appointments")
     public Result<List<Appointment>> listAllAppointments() {
         return Result.success(appointmentService.listAll());
     }

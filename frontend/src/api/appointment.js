@@ -24,10 +24,10 @@ export const createAppointment = data => {
 }
 
 // 获取用户的预约列表，根据用户ID筛选
-export const listMyAppointments = userId => useMock ? Promise.resolve(mockAppointments.filter(a => a.userId == userId)) : request.get(`/appointment/list/${userId}`)
+export const listMyAppointments = userId => useMock ? Promise.resolve(mockAppointments.filter(a => a.userId == userId)) : request.get(`/appointment/my?userId=${userId}`)
 
 // 管理员接口：查看所有预约
-export const listAllAppointments = () => useMock ? Promise.resolve(mockAppointments) : request.get('/admin/appointment/list')
+export const listAllAppointments = () => useMock ? Promise.resolve(mockAppointments) : request.get('/admin/appointments')
 
 // 用户签到接口
 export const checkin = data => {
@@ -41,7 +41,7 @@ export const checkin = data => {
         return Promise.resolve(apt)
     }
     // 真实模式下，调用后端签到接口
-    return request.post('/appointment/checkin', data)
+    return request.post('/appointment/report', data)
 }
 
 // 用户支付接口
